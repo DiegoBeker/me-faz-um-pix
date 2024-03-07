@@ -1,3 +1,4 @@
+using me_faz_um_pix.Middlewares;
 using me_faz_um_pix.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,5 +25,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Middlewares
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.Run();
