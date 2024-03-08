@@ -14,6 +14,14 @@ public class User
 
     public string Name { get; set; }
 
-    public List<PaymentProviderAccount> PaymentProviderAccounts { get; }
+    public List<PaymentProviderAccount>? PaymentProviderAccounts { get; }
+
+    public User(string cpf, string name)
+    {
+        Cpf = cpf;
+        Name = name;
+        CreatedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
+    }
 
 }

@@ -26,7 +26,7 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
       .WithOne(e => e.PaymentProvider)
       .HasForeignKey(e => e.PaymentProviderId);
     
-    // map 1:n payment provider <-> payment provider account relation
+    // map 1:n payment provider account <-> pix key relation
     builder.Entity<PaymentProviderAccount>().HasKey(e => e.Id);
     builder.Entity<PixKey>().HasKey(e => e.Id);
     builder.Entity<PaymentProviderAccount>()
