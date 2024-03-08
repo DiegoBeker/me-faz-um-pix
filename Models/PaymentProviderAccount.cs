@@ -16,4 +16,9 @@ public class PaymentProviderAccount
     public User User {get; set ;}
     public long UserId {get; set ;}
 
+    public PaymentProvider PaymentProvider { get; set; }
+    public long PaymentProviderId { get; set; }
+
+    public List<PixKey> PixKeys { get; }
+
 }

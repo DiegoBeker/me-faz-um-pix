@@ -17,5 +17,21 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
       .HasMany(e => e.PaymentProviderAccounts)
       .WithOne(e => e.User)
       .HasForeignKey(e => e.UserId);
+
+    // map 1:n payment provider <-> payment provider account relation
+    builder.Entity<PaymentProvider>().HasKey(e => e.Id);
+    builder.Entity<PaymentProviderAccount>().HasKey(e => e.Id);
+    builder.Entity<PaymentProvider>()
+      .HasMany(e => e.PaymentProviderAccounts)
+      .WithOne(e => e.PaymentProvider)
+      .HasForeignKey(e => e.PaymentProviderId);
+    
+    // map 1:n payment provider <-> payment provider account relation
+    builder.Entity<PaymentProviderAccount>().HasKey(e => e.Id);
+    builder.Entity<PixKey>().HasKey(e => e.Id);
+    builder.Entity<PaymentProviderAccount>()
+      .HasMany(e => e.PixKeys)
+      .WithOne(e => e.PaymentProviderAccount)
+      .HasForeignKey(e => e.PaymentProviderAccountId);
   }
 }
