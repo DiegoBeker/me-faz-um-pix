@@ -2,36 +2,10 @@ using me_faz_um_pix.Data;
 using me_faz_um_pix.Middlewares;
 using me_faz_um_pix.Services;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using me_faz_um_pix.Config;
+
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddAuthentication(options =>
-{
-  options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-  options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-  options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
-{
-  options.TokenValidationParameters = new TokenValidationParameters
-  {
-    ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-    ValidAudience = builder.Configuration["JwtSettings:Audience"],
-    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]!)),
-    ValidateIssuer = true,
-    ValidateAudience = true,
-    ValidateLifetime = false,
-    ValidateIssuerSigningKey = true
-  };
-});
-
-// configs
-IConfigurationSection jwtConfigurationSection = builder.Configuration.GetSection("JwtSettings");
-builder.Services.Configure<TokenConfig>(jwtConfigurationSection);
 
 // database
 builder.Services.AddDbContext<AppDBContext>(opts =>
@@ -81,7 +55,6 @@ builder.Services.AddSwaggerGen(opt =>
 
 builder.Services.AddScoped<HealthService>();
 builder.Services.AddScoped<KeyService>();
-builder.Services.AddScoped<TokenService>();
 
 var app = builder.Build();
 

@@ -9,19 +9,17 @@ namespace me_faz_um_pix.Controllers;
 public class KeyController : ControllerBase
 {
     private readonly KeyService _keyService;
-    private readonly TokenService _tokenService;
 
-    public KeyController(KeyService keyService, TokenService tokenService)
+    public KeyController(KeyService keyService)
     {
         _keyService = keyService;
-        _tokenService = tokenService;
     }
 
     [HttpGet]
     public IActionResult GetAllKeys()
     {
-        String token = _tokenService.GenerateToken(3);
-        return Ok(token);
+        string? authorizationHeader = HttpContext.Request.Headers["Authorization"];
+        return Ok(authorizationHeader);
     }
 
 }
