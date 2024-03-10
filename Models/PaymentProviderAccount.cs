@@ -13,13 +13,13 @@ public class PaymentProviderAccount
     public string Agency { get; set; }
     public string Number { get; set; }
 
-    public User? User { get; set; }
+    public User? User;
     public long UserId { get; set; }
 
-    public PaymentProvider? PaymentProvider { get; set; }
+    public PaymentProvider? PaymentProvider;
     public long PaymentProviderId { get; set; }
 
-    public List<PixKey>? PixKeys { get; }
+    public List<PixKey>? PixKeys;
 
     public PaymentProviderAccount(string agency, string number)
     {

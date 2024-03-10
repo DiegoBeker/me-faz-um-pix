@@ -12,7 +12,7 @@ public class PaymentProvider
     public DateTime? UpdatedAt { get; set; }
     public string Token { get; set; }
 
-    public List<PaymentProviderAccount>? PaymentProviderAccounts { get; }
+    public List<PaymentProviderAccount>? PaymentProviderAccounts;
 
     public PaymentProvider(string token)
     {

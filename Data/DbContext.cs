@@ -6,7 +6,10 @@ namespace me_faz_um_pix.Data;
 public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(options)
 {
     public DbSet<User> User { get; set; }
+
+    public DbSet<PaymentProvider> PaymentProvider { get; set; }
     public DbSet<PaymentProviderAccount> PaymentProviderAccount { get; set; }
+    public DbSet<PixKey> PixKey { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
   {

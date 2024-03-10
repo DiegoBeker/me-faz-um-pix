@@ -14,7 +14,7 @@ public class User
 
     public string Name { get; set; }
 
-    public List<PaymentProviderAccount>? PaymentProviderAccounts { get; }
+    public List<PaymentProviderAccount>? PaymentProviderAccounts;
 
     public User(string cpf, string name)
     {

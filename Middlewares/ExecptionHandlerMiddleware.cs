@@ -1,5 +1,5 @@
 using System.Net;
-using me_faz_um_pix.Exeptions;
+using me_faz_um_pix.Exceptions;
 
 namespace me_faz_um_pix.Middlewares;
 
@@ -28,6 +28,10 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
 
     ExceptionResponse response = exception switch
     {
+      UnauthorizedException _ => new ExceptionResponse(HttpStatusCode.Unauthorized, exception.Message),
+      NotFoundException _ => new ExceptionResponse(HttpStatusCode.NotFound, exception.Message),
+      ForbiddenException _ => new ExceptionResponse(HttpStatusCode.Forbidden, exception.Message),
+      ConflictException _ => new ExceptionResponse(HttpStatusCode.Conflict, exception.Message),
       _ => new ExceptionResponse(HttpStatusCode.InternalServerError, "Internal server error. Please retry later.")
     };
 

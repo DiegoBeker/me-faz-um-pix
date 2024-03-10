@@ -1,5 +1,6 @@
 using me_faz_um_pix.Data;
 using me_faz_um_pix.Middlewares;
+using me_faz_um_pix.Repositories;
 using me_faz_um_pix.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,7 +28,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>
 {
-    opt.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "MyAPI", Version = "v1" });
+    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });
     opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -55,6 +56,10 @@ builder.Services.AddSwaggerGen(opt =>
 
 builder.Services.AddScoped<HealthService>();
 builder.Services.AddScoped<KeyService>();
+builder.Services.AddScoped<PaymentProviderRepository>();
+builder.Services.AddScoped<PaymentProviderAccountRepository>();
+builder.Services.AddScoped<PixKeyRepository>();
+builder.Services.AddScoped<UserRespository>();
 
 var app = builder.Build();
 
