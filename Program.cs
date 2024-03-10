@@ -3,6 +3,7 @@ using me_faz_um_pix.Middlewares;
 using me_faz_um_pix.Repositories;
 using me_faz_um_pix.Services;
 using Microsoft.EntityFrameworkCore;
+using Prometheus;
 
 using Microsoft.OpenApi.Models;
 
@@ -63,12 +64,22 @@ builder.Services.AddScoped<UserRespository>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// // Configure the HTTP request pipeline.
+// if (app.Environment.IsDevelopment())
+// {
+//     app.UseSwagger();
+//     app.UseSwaggerUI();
+// }
+app.UseSwagger();
+ app.UseSwaggerUI();
+
+app.UseMetricServer(); // coleta as métricas
+app.UseHttpMetrics(options => 
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+	options.AddCustomLabel("host", context => context.Request.Host.Host);
+});
+
+
 
 app.UseHttpsRedirection();
 
@@ -76,6 +87,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapMetrics();
 // Middlewares
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
