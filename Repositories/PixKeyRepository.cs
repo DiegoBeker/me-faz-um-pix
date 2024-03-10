@@ -48,6 +48,7 @@ public class PixKeyRepository
     }
 
     public async Task<PixKey?> GetKeyByValue(string value){
-        return await _context.PixKey.FirstOrDefaultAsync(e => e.Value.Equals(value));
+        return await _context.PixKey
+            .FirstOrDefaultAsync(e => e.Value.Equals(value));
     }
 }

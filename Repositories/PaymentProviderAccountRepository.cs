@@ -23,4 +23,8 @@ public class PaymentProviderAccountRepository
         await _context.SaveChangesAsync();
         return paymentProviderAccount;
     }
+
+    public async Task<PaymentProviderAccount?> GetById(long accountId) {
+        return await _context.PaymentProviderAccount.FirstOrDefaultAsync(e => e.Id.Equals(accountId));
+    }
 }

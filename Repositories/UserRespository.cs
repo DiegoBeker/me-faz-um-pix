@@ -17,4 +17,9 @@ public class UserRespository
         return await _context.User.FirstOrDefaultAsync(e => e.Cpf.Equals(cpf));
     }
 
+    public async Task<User?> GetById(long id)
+    {
+        return await _context.User.FirstOrDefaultAsync(e => e.Id.Equals(id));
+    }
+
 }

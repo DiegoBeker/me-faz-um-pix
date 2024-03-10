@@ -12,11 +12,14 @@ public class PaymentProvider
     public DateTime? UpdatedAt { get; set; }
     public string Token { get; set; }
 
+    public string Name { get; set; }
+
     public List<PaymentProviderAccount>? PaymentProviderAccounts;
 
-    public PaymentProvider(string token)
+    public PaymentProvider(string token, string name)
     {
         Token = token;
+        Name = name;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
     }

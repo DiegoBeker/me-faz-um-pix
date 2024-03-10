@@ -2,6 +2,7 @@ using me_faz_um_pix.Dtos;
 using me_faz_um_pix.Exceptions;
 using me_faz_um_pix.Models;
 using me_faz_um_pix.Repositories;
+using me_faz_um_pix.Views;
 
 namespace me_faz_um_pix.Services;
 
@@ -29,8 +30,8 @@ public class KeyService
   {
     PixKey? keyExists = await _pixKeyRepository.GetKeyByValue(data.Key.Value);
 
-    if(keyExists != null) throw new ConflictException("Key Already in use");
-    
+    if (keyExists != null) throw new ConflictException("Key Already in use");
+
     PaymentProvider? paymentProvider = await _paymentProviderRepository.GetByToken(token);
 
     if (paymentProvider == null) throw new UnauthorizedException("Invalid Token.");
@@ -73,7 +74,26 @@ public class KeyService
     PixKey newPixKey = data.Key.ToEntity();
     newPixKey.PaymentProviderAccountId = paymentProviderAccount.Id;
 
-    var result = await _pixKeyRepository.CreatePixKey(newPixKey);
+    PixKey result = await _pixKeyRepository.CreatePixKey(newPixKey);
+
+    return result;
+  }
+
+  public async Task<KeyView> GetKeyByValue(string value, string token)
+  {
+    PaymentProvider? paymentProvider = await _paymentProviderRepository.GetByToken(token);
+
+    if (paymentProvider == null) throw new UnauthorizedException("Invalid Token.");
+
+    PixKey? keyExists = await _pixKeyRepository.GetKeyByValue(value);
+
+    if (keyExists == null) throw new NotFoundException("Key not found");
+
+    PaymentProviderAccount? ppa = await _paymentProviderAccountRepository.GetById(keyExists.PaymentProviderAccountId);
+
+    User user = await _userRepository.GetById(ppa.UserId);
+
+    KeyView result = new KeyView(keyExists, user, paymentProvider, ppa);
 
     return result;
   }
