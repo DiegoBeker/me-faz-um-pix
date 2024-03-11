@@ -36,7 +36,7 @@ public class KeyController : ControllerBase
         return CreatedAtAction(null, null, response);
     }
 
-    [HttpGet("/{type}/{value}")]
+    [HttpGet("{type}/{value}")]
     public async Task<IActionResult> GetKeyByValue(string type, string value)
     {
         string? authorizationHeader = HttpContext.Request.Headers.Authorization;

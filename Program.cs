@@ -71,7 +71,7 @@ var app = builder.Build();
 //     app.UseSwaggerUI();
 // }
 app.UseSwagger();
- app.UseSwaggerUI();
+app.UseSwaggerUI();
 
 app.UseMetricServer(); // coleta as métricas
 app.UseHttpMetrics(options => 

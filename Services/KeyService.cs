@@ -40,14 +40,14 @@ public class KeyService
 
     if (user == null) throw new NotFoundException("Cpf not found.");
 
-    if (data.Key.Type == "CPF" && (user.Cpf != data.Key.Value))
+    if (data.Key.Type == "CPF" && user.Cpf != data.Key.Value)
       throw new ForbiddenException("Cpf key does no match with user Cpf");
 
     PaymentProviderAccount? paymentProviderAccount = await _paymentProviderAccountRepository
       .GetByAgencyAndNumber(data.Account.Agency, data.Account.Number);
 
     if (paymentProviderAccount != null && (paymentProviderAccount.UserId != user.Id))
-      throw new ForbiddenException("User cpf does not match with account user");
+      throw new ForbiddenException("Account already exists and User cpf does not match with account user cpf");
 
     if (paymentProviderAccount == null)
     {
