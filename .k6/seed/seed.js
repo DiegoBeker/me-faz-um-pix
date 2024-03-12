@@ -1,5 +1,6 @@
 const dotenv = require("dotenv");
 const fs = require("fs");
+const { faker } = require('@faker-js/faker');
 
 dotenv.config();
 
@@ -10,20 +11,33 @@ const knex = require("knex")({
 
 console.log(process.env.DATABASE_URL)
 
-const USERS = 1_000_000;
+const AMOUNT_TO_CREATE = 500_000;
 const ERASE_DATA = false;
 
 async function run() {
   if (ERASE_DATA) {
     await knex("User").del();
+    await knex("PaymentProvider").del();
+    await knex("PaymentProviderAccount").del();
   }
 
   const start = new Date();
 
   // users
   const users = generateUsers();
-  await populateUsers(users);
-  generateJson("./seed/existing_users.json", users);
+  await populateDb("User" , users);
+  //generateJson("./seed/existing_users.json", users);
+
+  //Psps
+  const psps = generatePsps()
+  await populateDb("PaymentProvider" , psps);
+  //generateJson("./seed/existing_psps.json", psps);
+  
+  //Accounts
+  const accounts = generateAccounts(users.length,psps.length);
+  await populateDb("PaymentProviderAccount" , accounts);
+  //generateJson("./seed/existing_accounts.json", accounts);
+
 
   console.log("Closing DB connection...");
   await knex.destroy();
@@ -37,12 +51,12 @@ async function run() {
 run();
 
 function generateUsers() {
-  console.log(`Generating ${USERS} users...`);
+  console.log(`Generating ${AMOUNT_TO_CREATE} users...`);
   const users = [];
-  for (let i = 0; i < USERS; i++) {
+  for (let i = 0; i < AMOUNT_TO_CREATE; i++) {
     users.push({
-      CreatedAt: null,
-      UpdatedAt: null,
+      CreatedAt: new Date().toISOString(),
+      UpdatedAt: new Date().toISOString(),
       Cpf: `${Date.now() + i}`,
       Name: `fakerUser${i}`
     });
@@ -51,11 +65,43 @@ function generateUsers() {
   return users;
 }
 
-async function populateUsers(users) {
-  console.log("Storing on DB...");
+function generatePsps() {
+  console.log(`Generating ${AMOUNT_TO_CREATE} Psps...`);
+  const psps = [];
+  for (let i = 0; i < AMOUNT_TO_CREATE; i++) {
+    psps.push({
+      CreatedAt: new Date().toISOString(),
+      UpdatedAt: new Date().toISOString(),
+      Token: faker.string.uuid(),
+      Name: faker.company.name()
+    });
+  }
 
-  const tableName = "User";
-  await knex.batchInsert(tableName, users);
+  return psps;
+}
+
+
+function generateAccounts(users, psps) {
+  console.log(`Generating ${AMOUNT_TO_CREATE} Accoounts...`);
+  const accounts = [];
+  for (let i = 0; i < AMOUNT_TO_CREATE; i++) {
+    accounts.push({
+      CreatedAt: new Date().toISOString(),
+      UpdatedAt: new Date().toISOString(),
+      Agency: faker.string.numeric({length: 5, min: 10000, max:99999}),
+      Number: faker.string.numeric({length: 9}),
+      UserId: Math.floor(Math.random() * users + 1),
+      PaymentProviderId: Math.floor(Math.random() * psps + 1),
+    });
+  }
+
+  return accounts;
+}
+
+async function populateDb(tableName, data) {
+  console.log(`Storing ${tableName} on DB...`);
+
+  await knex.batchInsert(tableName, data);
 }
 
 function generateJson(filepath, data) {

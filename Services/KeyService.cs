@@ -28,13 +28,14 @@ public class KeyService
   }
   public async Task<PixKey> CreateKey(CreateKeyDto data, string token)
   {
+    PaymentProvider? paymentProvider = await _paymentProviderRepository.GetByToken(token);
+
+    if (paymentProvider == null) throw new UnauthorizedException("Invalid Token.");
+    
     PixKey? keyExists = await _pixKeyRepository.GetKeyByValue(data.Key.Value);
 
     if (keyExists != null) throw new ConflictException("Key Already in use");
 
-    PaymentProvider? paymentProvider = await _paymentProviderRepository.GetByToken(token);
-
-    if (paymentProvider == null) throw new UnauthorizedException("Invalid Token.");
 
     User? user = await _userRepository.GetByCpf(data.User.Cpf);
 

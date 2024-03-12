@@ -4,7 +4,7 @@ import { SharedArray } from "k6/data";
 import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 
 export const options = {
-    vus: 100,
+    vus: 10,
     duration: "10s",
 };
 

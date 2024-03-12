@@ -5,15 +5,14 @@ namespace me_faz_um_pix.Data;
 
 public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(options)
 {
-    public DbSet<User> User { get; set; }
+  public DbSet<User> User { get; set; }
 
-    public DbSet<PaymentProvider> PaymentProvider { get; set; }
-    public DbSet<PaymentProviderAccount> PaymentProviderAccount { get; set; }
-    public DbSet<PixKey> PixKey { get; set; }
+  public DbSet<PaymentProvider> PaymentProvider { get; set; }
+  public DbSet<PaymentProviderAccount> PaymentProviderAccount { get; set; }
+  public DbSet<PixKey> PixKey { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder builder)
+  protected override void OnModelCreating(ModelBuilder builder)
   {
-    // map 1:n user <-> payment provider account relation
     builder.Entity<User>().HasKey(e => e.Id);
     builder.Entity<PaymentProviderAccount>().HasKey(e => e.Id);
     builder.Entity<User>()
@@ -28,7 +27,7 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
       .HasMany(e => e.PaymentProviderAccounts)
       .WithOne(e => e.PaymentProvider)
       .HasForeignKey(e => e.PaymentProviderId);
-    
+
     // map 1:n payment provider account <-> pix key relation
     builder.Entity<PaymentProviderAccount>().HasKey(e => e.Id);
     builder.Entity<PixKey>().HasKey(e => e.Id);
@@ -36,5 +35,18 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
       .HasMany(e => e.PixKeys)
       .WithOne(e => e.PaymentProviderAccount)
       .HasForeignKey(e => e.PaymentProviderAccountId);
+    
+    // indices
+    builder.Entity<User>()
+          .HasIndex(e => e.Cpf)
+          .IsUnique();
+    
+    builder.Entity<PixKey>()
+          .HasIndex(e => e.Value)
+          .IsUnique();
+  
+    builder.Entity<PaymentProvider>()
+          .HasIndex(e => e.Token)
+          .IsUnique();
   }
 }
