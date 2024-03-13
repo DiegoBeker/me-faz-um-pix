@@ -26,7 +26,5 @@ public class Payment
         Amount = amount;
         Status = PaymentStatus.PROCESSING;
         Description = description;
-        CreatedAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
     }
 }

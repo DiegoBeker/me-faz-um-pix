@@ -27,8 +27,6 @@ public class PaymentProviderAccount
     {
         Agency = agency;
         Number = number;
-        CreatedAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
     }
 
 }

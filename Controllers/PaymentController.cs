@@ -1,5 +1,6 @@
 using me_faz_um_pix.Dtos;
 using me_faz_um_pix.Exceptions;
+using me_faz_um_pix.Models;
 using me_faz_um_pix.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,7 +18,7 @@ public class PaymentController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult CreatePayment([FromBody] CreatePaymentDto createPaymentDto)
+    public async Task<IActionResult> CreatePayment([FromBody] CreatePaymentDto createPaymentDto)
     {
         string? authorizationHeader = HttpContext.Request.Headers.Authorization;
         string[] token;
@@ -25,8 +26,8 @@ public class PaymentController : ControllerBase
         if (authorizationHeader == null) throw new UnauthorizedException("Invalid token");
         else token = authorizationHeader.Split(' ');
 
-        var response = _paymentService.CreatePayment(createPaymentDto);
+        Payment response = await _paymentService.CreatePayment(createPaymentDto, token[1]);
 
-        return CreatedAtAction(null, null, response);
+        return Ok(response);
     }
 }

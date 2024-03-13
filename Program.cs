@@ -62,6 +62,7 @@ builder.Services.AddScoped<PaymentProviderRepository>();
 builder.Services.AddScoped<PaymentProviderAccountRepository>();
 builder.Services.AddScoped<PixKeyRepository>();
 builder.Services.AddScoped<UserRespository>();
+builder.Services.AddScoped<PaymentRepository>();
 
 var app = builder.Build();
 

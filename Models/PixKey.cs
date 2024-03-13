@@ -22,7 +22,5 @@ public class PixKey
     {
         Value = value;
         PixType = pixType;
-        CreatedAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
     }
 }

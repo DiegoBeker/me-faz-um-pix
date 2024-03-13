@@ -20,8 +20,6 @@ public class PaymentProvider
     {
         Token = token;
         Name = name;
-        CreatedAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
     }
 
 }

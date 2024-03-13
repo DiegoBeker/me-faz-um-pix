@@ -11,6 +11,8 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
   public DbSet<PaymentProviderAccount> PaymentProviderAccount { get; set; }
   public DbSet<PixKey> PixKey { get; set; }
 
+  public DbSet<Payment> Payment { get; set; }
+
   protected override void OnModelCreating(ModelBuilder builder)
   {
     builder.Entity<User>().HasKey(e => e.Id);

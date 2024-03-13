@@ -20,8 +20,6 @@ public class User
     {
         Cpf = cpf;
         Name = name;
-        CreatedAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
     }
 
 }
