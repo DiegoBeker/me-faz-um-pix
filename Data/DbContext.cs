@@ -35,6 +35,22 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
       .HasMany(e => e.PixKeys)
       .WithOne(e => e.PaymentProviderAccount)
       .HasForeignKey(e => e.PaymentProviderAccountId);
+
+    // map 1:n payment provider account <-> payment relation
+    builder.Entity<PaymentProviderAccount>().HasKey(e => e.Id);
+    builder.Entity<Payment>().HasKey(e => e.Id);
+    builder.Entity<PaymentProviderAccount>()
+      .HasMany(e => e.Payments)
+      .WithOne(e => e.PaymentProviderAccount)
+      .HasForeignKey(e => e.PaymentProviderAccountId);
+
+     // map 1:n pix key <-> payment relation
+    builder.Entity<PixKey>().HasKey(e => e.Id);
+    builder.Entity<Payment>().HasKey(e => e.Id);
+    builder.Entity<PixKey>()
+      .HasMany(e => e.Payments)
+      .WithOne(e => e.PixKey)
+      .HasForeignKey(e => e.PixKeyId);
     
     // indices
     builder.Entity<User>()

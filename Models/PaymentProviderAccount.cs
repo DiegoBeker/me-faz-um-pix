@@ -21,6 +21,8 @@ public class PaymentProviderAccount
 
     public List<PixKey>? PixKeys;
 
+    public List<Payment>? Payments;
+
     public PaymentProviderAccount(string agency, string number)
     {
         Agency = agency;

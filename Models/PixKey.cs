@@ -16,6 +16,8 @@ public class PixKey
     public PaymentProviderAccount? PaymentProviderAccount;
     public long PaymentProviderAccountId { get; set; }
 
+    public List<Payment>? Payments;
+
     public PixKey(string value, string pixType)
     {
         Value = value;

@@ -31,7 +31,7 @@ public class KeyService
     PaymentProvider? paymentProvider = await _paymentProviderRepository.GetByToken(token);
 
     if (paymentProvider == null) throw new UnauthorizedException("Invalid Token.");
-    
+
     PixKey? keyExists = await _pixKeyRepository.GetKeyByValue(data.Key.Value);
 
     if (keyExists != null) throw new ConflictException("Key Already in use");
@@ -92,7 +92,7 @@ public class KeyService
 
     PaymentProviderAccount? ppa = await _paymentProviderAccountRepository.GetById(keyExists.PaymentProviderAccountId);
 
-    User user = await _userRepository.GetById(ppa.UserId);
+    User? user = await _userRepository.GetById(ppa.UserId);
 
     KeyView result = new KeyView(keyExists, user, paymentProvider, ppa);
 
