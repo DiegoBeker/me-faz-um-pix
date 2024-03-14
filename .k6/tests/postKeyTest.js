@@ -4,17 +4,23 @@ import { SharedArray } from "k6/data";
 import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 
 export const options = {
-    vus: 10,
+    vus: 100,
     duration: "10s",
 };
 
-const data = new SharedArray("users", function () {
+const usersData = new SharedArray("users", function () {
     const result = JSON.parse(open("../seed/existing_users.json"));
     return result;
 });
 
+const pspsData = new SharedArray("psps", function () {
+    const result = JSON.parse(open("../seed/existing_psps.json"));
+    return result;
+});
+
 export default function () {
-    const randomUser = data[Math.floor(Math.random() * data.length)];
+    const randomUser = usersData[Math.floor(Math.random() * usersData.length)];
+    const randomPsp = pspsData[Math.floor(Math.random() * pspsData.length)];
     const randomUUID = uuidv4();
     const key = {
         key: {
@@ -32,7 +38,7 @@ export default function () {
     const body = JSON.stringify(key);
     const headers = {
         "Content-Type": "application/json",
-        "Authorization": "Bearer 66m05vwhEAeCU6hCHg641H7l5CbJu8F2XxYFPU6JTVpCJMOWbhEEaGLYaySxsM39"
+        "Authorization": `Bearer ${randomPsp.Token}`
     };
 
     const response = http.post(`http://localhost:5041/keys`, body, { headers });
