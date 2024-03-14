@@ -55,8 +55,6 @@ function generateUsers() {
   const users = [];
   for (let i = 0; i < AMOUNT_TO_CREATE; i++) {
     users.push({
-      CreatedAt: new Date().toISOString(),
-      UpdatedAt: new Date().toISOString(),
       Cpf: `${Date.now() + i}`,
       Name: `fakerUser${i}`
     });
@@ -70,8 +68,6 @@ function generatePsps() {
   const psps = [];
   for (let i = 0; i < AMOUNT_TO_CREATE; i++) {
     psps.push({
-      CreatedAt: new Date().toISOString(),
-      UpdatedAt: new Date().toISOString(),
       Token: faker.string.uuid(),
       Name: faker.company.name()
     });
@@ -86,8 +82,6 @@ function generateAccounts(users, psps) {
   const accounts = [];
   for (let i = 0; i < AMOUNT_TO_CREATE; i++) {
     accounts.push({
-      CreatedAt: new Date().toISOString(),
-      UpdatedAt: new Date().toISOString(),
       Agency: faker.string.numeric({length: 5, min: 10000, max:99999}),
       Number: faker.string.numeric({length: 9}),
       UserId: Math.floor(Math.random() * users + 1),
