@@ -13,14 +13,16 @@ public class PaymentService
     private readonly UserRespository _userRepository;
     private readonly PaymentRepository _paymentRepository;
 
+    private readonly MessageService _messsageService;
+    private readonly int IDEMPOTENCY_SECONDS_TOLERANCE = 30;
+
     public PaymentService(
-        PixKeyRepository pixKeyRepository,
         PaymentProviderRepository paymentProviderRepository,
         PaymentProviderAccountRepository paymentProviderAccountRepository,
         PixKeyRepository pixKeyRepositoy,
         UserRespository userRespository,
-        PaymentRepository paymentRepository
-
+        PaymentRepository paymentRepository,
+        MessageService messsageService
     )
     {
         _paymentProviderAccountRepository = paymentProviderAccountRepository;
@@ -28,6 +30,7 @@ public class PaymentService
         _pixKeyRepository = pixKeyRepositoy;
         _userRepository = userRespository;
         _paymentRepository = paymentRepository;
+        _messsageService = messsageService;
     }
 
     public async Task<Payment> CreatePayment(CreatePaymentDto data, string token)
@@ -35,28 +38,46 @@ public class PaymentService
         PaymentProvider? paymentProvider = await _paymentProviderRepository.GetByToken(token);
         if (paymentProvider == null) throw new UnauthorizedException("Invalid Token.");
 
-        PixKey? keyExists = await _pixKeyRepository.GetKeyByValue(data.Destiny.Key.Value);
+        PixKey? destinyKey = await _pixKeyRepository.GetKeyByValue(data.Destiny.Key.Value);
 
-        if (keyExists == null) throw new NotFoundException("Key value not found");
+        if (destinyKey == null) throw new NotFoundException("Key value not found");
 
-        PaymentProviderAccount? paymentProviderAccount = await _paymentProviderAccountRepository
+        PaymentProviderAccount? originAccount = await _paymentProviderAccountRepository
             .GetByAgencyAndNumber(data.Origin.Account.Agency, data.Origin.Account.Number);
 
-        if (paymentProviderAccount == null) throw new NotFoundException("Account not found");
+        if (originAccount == null) throw new NotFoundException("Account not found");
 
         User? user = await _userRepository.GetByCpf(data.Origin.User.Cpf);
 
         if (user == null) throw new NotFoundException("Cpf not found.");
 
-        if (paymentProviderAccount != null && (paymentProviderAccount.UserId != user.Id))
+        if (originAccount != null && (originAccount.UserId != user.Id))
             throw new ForbiddenException("User cpf does not match with account user cpf");
-        
+
         Payment newPayment = data.ToEntity();
-        newPayment.PaymentProviderAccountId = paymentProviderAccount.Id;
-        newPayment.PixKeyId = keyExists.Id;
-        
+        newPayment.PaymentProviderAccountId = originAccount.Id;
+        newPayment.PixKeyId = destinyKey.Id;
+
+        PaymentIdempotenceKey key = new(newPayment);
+
+        if(await CheckIfDuplicatedIdempotenceKey(key)) 
+            throw new RecentPaymentViolationException($"Can't accept the same payment user {IDEMPOTENCY_SECONDS_TOLERANCE}");
+
         Payment payment = await _paymentRepository.CreatePayment(newPayment);
 
+        ProcessPayment(data);
+
         return payment;
+    }
+
+    private async Task<bool> CheckIfDuplicatedIdempotenceKey(PaymentIdempotenceKey key)
+    {
+        Payment? payment = await _paymentRepository.GetPaymentByAccountAndKey(key, IDEMPOTENCY_SECONDS_TOLERANCE);
+        return payment != null;
+    }
+
+    public void ProcessPayment(CreatePaymentDto payment)
+    {
+        _messsageService.SendMessage(payment);
     }
 }

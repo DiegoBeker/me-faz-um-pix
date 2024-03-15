@@ -2,6 +2,7 @@ using me_faz_um_pix.Dtos;
 using me_faz_um_pix.Exceptions;
 using me_faz_um_pix.Models;
 using me_faz_um_pix.Services;
+using me_faz_um_pix.Views;
 using Microsoft.AspNetCore.Mvc;
 
 namespace me_faz_um_pix.Controllers;
@@ -26,7 +27,12 @@ public class PaymentController : ControllerBase
         if (authorizationHeader == null) throw new UnauthorizedException("Invalid token");
         else token = authorizationHeader.Split(' ');
 
-        Payment response = await _paymentService.CreatePayment(createPaymentDto, token[1]);
+        Payment payment = await _paymentService.CreatePayment(createPaymentDto, token[1]);
+
+        CreatePaymentView response = new(createPaymentDto)
+        {
+            Id = payment.Id
+        };
 
         return Ok(response);
     }

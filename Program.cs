@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Prometheus;
 
 using Microsoft.OpenApi.Models;
+using me_faz_um_pix.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,11 +59,16 @@ builder.Services.AddSwaggerGen(opt =>
 builder.Services.AddScoped<HealthService>();
 builder.Services.AddScoped<KeyService>();
 builder.Services.AddScoped<PaymentService>();
+builder.Services.AddScoped<MessageService>();
 builder.Services.AddScoped<PaymentProviderRepository>();
 builder.Services.AddScoped<PaymentProviderAccountRepository>();
 builder.Services.AddScoped<PixKeyRepository>();
 builder.Services.AddScoped<UserRespository>();
 builder.Services.AddScoped<PaymentRepository>();
+
+IConfigurationSection queueConfigurationSection = builder.
+Configuration.GetSection("QueueSettings");
+builder.Services.Configure<QueueConfig>(queueConfigurationSection);
 
 var app = builder.Build();
 
