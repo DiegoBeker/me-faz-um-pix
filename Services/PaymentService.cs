@@ -55,6 +55,9 @@ public class PaymentService
         if (originAccount != null && (originAccount.UserId != user.Id))
             throw new ForbiddenException("User cpf does not match with account user cpf");
 
+        if(destinyKey.PaymentProviderAccountId == originAccount.Id)
+            throw new ForbiddenException("Can't send a payment to the same account");
+
         Payment newPayment = data.ToEntity();
         newPayment.PaymentProviderAccountId = originAccount.Id;
         newPayment.PixKeyId = destinyKey.Id;
