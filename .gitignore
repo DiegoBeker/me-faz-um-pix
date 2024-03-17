@@ -2,8 +2,8 @@ bin/
 obj/
 node_modules
 .env*
-/seed/existing_accounts.json
-/seed/existing_pixKeys.json
-/seed/existing_psps.json
-/seed/existing_users.json
+.k6/seed/existing_accounts.json
+.k6/seed/existing_pixKeys.json
+.k6/seed/existing_psps.json
+.k6/seed/existing_users.json
 
