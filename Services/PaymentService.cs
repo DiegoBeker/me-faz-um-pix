@@ -2,6 +2,7 @@ using me_faz_um_pix.Dtos;
 using me_faz_um_pix.Exceptions;
 using me_faz_um_pix.Models;
 using me_faz_um_pix.Repositories;
+using me_faz_um_pix.Views;
 
 namespace me_faz_um_pix.Services;
 
@@ -65,7 +66,9 @@ public class PaymentService
 
         Payment payment = await _paymentRepository.CreatePayment(newPayment);
 
-        ProcessPayment(data);
+        CreatePaymentView view = new(data){Id = payment.Id};
+    
+        ProcessPayment(view, DateTime.UtcNow);
 
         return payment;
     }
@@ -76,8 +79,13 @@ public class PaymentService
         return payment != null;
     }
 
-    public void ProcessPayment(CreatePaymentDto payment)
+    public void ProcessPayment(CreatePaymentView payment,DateTime creationTime)
     {
-        _messsageService.SendMessage(payment);
+        _messsageService.SendMessage(payment, creationTime);
+    }
+
+    public async Task<Payment?> UpdatePaymentStatus(PaymentStatus status, long paymentId){
+        Payment? payment = await _paymentRepository.UpdatePaymentStatus(status,paymentId);
+        return payment;
     }
 }

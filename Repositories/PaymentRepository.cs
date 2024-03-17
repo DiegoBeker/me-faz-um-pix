@@ -32,6 +32,21 @@ public class PaymentRepository
         
         return payment;
     }
+
+    public async Task<Payment?> UpdatePaymentStatus(PaymentStatus status, long paymentId){
+        
+        var payment = await _context.Payment
+            .Where(e => e.Id.Equals(paymentId))
+            .FirstOrDefaultAsync();
+
+        if (payment != null)
+        {
+            payment.Status = status; // Supondo que 'Status' é a propriedade a ser atualizada
+            await _context.SaveChangesAsync();
+        }
+
+        return payment;
+    }
     
 }
 

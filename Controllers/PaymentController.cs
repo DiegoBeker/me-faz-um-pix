@@ -36,4 +36,17 @@ public class PaymentController : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpPatch("{status}/{paymentId}")]
+    public async Task<IActionResult> UpdatePaymentStatus(string status, string paymentId)
+    {
+        if (!Enum.TryParse(status, true, out PaymentStatus paymentStatus) || !long.TryParse(paymentId, out long paymentIdParsed))
+        {
+            return BadRequest("Invalid Status");
+        }
+
+        await _paymentService.UpdatePaymentStatus(paymentStatus, paymentIdParsed);
+
+        return NoContent();
+    }
 }
