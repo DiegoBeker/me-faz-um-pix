@@ -1,7 +1,8 @@
 {
   "description": "k6",
   "scripts": {
-    "seed": "node ./seed/seed.js"
+    "seed": "node ./seed/seed.js",
+    "seed:pix": "node ./seed/seedPixKeys.js"
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",

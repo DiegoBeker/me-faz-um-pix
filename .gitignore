@@ -2,4 +2,8 @@ bin/
 obj/
 node_modules
 .env*
+/seed/existing_accounts.json
+/seed/existing_pixKeys.json
+/seed/existing_psps.json
+/seed/existing_users.json
 

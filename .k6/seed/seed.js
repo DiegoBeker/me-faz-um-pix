@@ -9,8 +9,6 @@ const knex = require("knex")({
   connection: process.env.DATABASE_URL,
 });
 
-console.log(process.env.DATABASE_URL)
-
 const AMOUNT_TO_CREATE = 1_000_000;
 const ERASE_DATA = false;
 let data = [];
@@ -39,9 +37,9 @@ async function run() {
   await populateDb("PaymentProviderAccount" , data);
   generateJson("./seed/existing_accounts.json", data);
 
-  data = await getPixKeysWithAccountsAndUsers();
-  generateJson("./seed/existing_pixkeys.json", data);
-
+  data = generatePixKeys();
+  await populateDb("PixKey" , data);
+  generateJson("./seed/existing_pixKeys.json", data);
 
   console.log("Closing DB connection...");
   await knex.destroy();
@@ -109,23 +107,16 @@ function generateJson(filepath, data) {
   fs.writeFileSync(filepath, JSON.stringify(data));
 }
 
-async function getPixKeysWithAccountsAndUsers() {
-  let pixKeysWithAccountsAndUsers = [];
-  try {
-    const query = `
-      SELECT "PixKey".*, "PaymentProviderAccount".*, "User".*
-      FROM "PixKey"
-      INNER JOIN "PaymentProviderAccount" ON "PixKey"."PaymentProviderAccountId" = "PaymentProviderAccount"."Id"
-      INNER JOIN "User" ON "PaymentProviderAccount"."UserId" = "User"."Id"
-    `;
-    
-    pixKeysWithAccountsAndUsers = await knex.raw(query);
-
-    console.log('PixKeys com suas PaymentProviderAccounts e Users:', pixKeysWithAccountsAndUsers.rows.length);
-  } catch (error) {
-    console.error('Erro ao buscar PixKeys com suas PaymentProviderAccounts e Users:', error);
-  } finally {
-    await knex.destroy();
+function generatePixKeys() {
+  console.log(`Generating ${AMOUNT_TO_CREATE} Keys...`);
+  const pixKeys = [];
+  for (let i = 0; i < AMOUNT_TO_CREATE; i++) {
+    pixKeys.push({
+      Value: faker.string.uuid(),
+      PixType: "Random",
+      PaymentProviderAccountId: Math.floor(Math.random() * AMOUNT_TO_CREATE + 1),
+    });
   }
-  return pixKeysWithAccountsAndUsers.rows;
+
+  return pixKeys;
 }
