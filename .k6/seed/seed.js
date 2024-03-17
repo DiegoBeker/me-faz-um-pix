@@ -11,8 +11,9 @@ const knex = require("knex")({
 
 console.log(process.env.DATABASE_URL)
 
-const AMOUNT_TO_CREATE = 500_000;
+const AMOUNT_TO_CREATE = 1_000_000;
 const ERASE_DATA = false;
+let data = [];
 
 async function run() {
   if (ERASE_DATA) {
@@ -24,19 +25,22 @@ async function run() {
   const start = new Date();
 
   // users
-  const users = generateUsers();
-  await populateDb("User" , users);
-  //generateJson("./seed/existing_users.json", users);
+  data = generateUsers();
+  await populateDb("User" , data);
+  generateJson("./seed/existing_users.json", data);
 
   //Psps
-  const psps = generatePsps()
-  await populateDb("PaymentProvider" , psps);
-  //generateJson("./seed/existing_psps.json", psps);
+  data = generatePsps();
+  await populateDb("PaymentProvider" , data);
+  generateJson("./seed/existing_psps.json", data);
   
   //Accounts
-  const accounts = generateAccounts(users.length,psps.length);
-  await populateDb("PaymentProviderAccount" , accounts);
-  //generateJson("./seed/existing_accounts.json", accounts);
+  data= generateAccounts();
+  await populateDb("PaymentProviderAccount" , data);
+  generateJson("./seed/existing_accounts.json", data);
+
+  data = await getPixKeysWithAccountsAndUsers();
+  generateJson("./seed/existing_pixkeys.json", data);
 
 
   console.log("Closing DB connection...");
@@ -77,15 +81,15 @@ function generatePsps() {
 }
 
 
-function generateAccounts(users, psps) {
+function generateAccounts() {
   console.log(`Generating ${AMOUNT_TO_CREATE} Accoounts...`);
   const accounts = [];
   for (let i = 0; i < AMOUNT_TO_CREATE; i++) {
     accounts.push({
       Agency: faker.string.numeric({length: 5, min: 10000, max:99999}),
       Number: faker.string.numeric({length: 9}),
-      UserId: Math.floor(Math.random() * users + 1),
-      PaymentProviderId: Math.floor(Math.random() * psps + 1),
+      UserId: Math.floor(Math.random() * AMOUNT_TO_CREATE + 1),
+      PaymentProviderId: Math.floor(Math.random() * AMOUNT_TO_CREATE + 1),
     });
   }
 
@@ -103,4 +107,25 @@ function generateJson(filepath, data) {
     fs.unlinkSync(filepath);
   }
   fs.writeFileSync(filepath, JSON.stringify(data));
+}
+
+async function getPixKeysWithAccountsAndUsers() {
+  let pixKeysWithAccountsAndUsers = [];
+  try {
+    const query = `
+      SELECT "PixKey".*, "PaymentProviderAccount".*, "User".*
+      FROM "PixKey"
+      INNER JOIN "PaymentProviderAccount" ON "PixKey"."PaymentProviderAccountId" = "PaymentProviderAccount"."Id"
+      INNER JOIN "User" ON "PaymentProviderAccount"."UserId" = "User"."Id"
+    `;
+    
+    pixKeysWithAccountsAndUsers = await knex.raw(query);
+
+    console.log('PixKeys com suas PaymentProviderAccounts e Users:', pixKeysWithAccountsAndUsers.rows.length);
+  } catch (error) {
+    console.error('Erro ao buscar PixKeys com suas PaymentProviderAccounts e Users:', error);
+  } finally {
+    await knex.destroy();
+  }
+  return pixKeysWithAccountsAndUsers.rows;
 }

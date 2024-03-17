@@ -62,7 +62,7 @@ public class PaymentService
         PaymentIdempotenceKey key = new(newPayment);
 
         if(await CheckIfDuplicatedIdempotenceKey(key)) 
-            throw new RecentPaymentViolationException($"Can't accept the same payment user {IDEMPOTENCY_SECONDS_TOLERANCE}");
+            throw new RecentPaymentViolationException($"Can't accept the same payment under {IDEMPOTENCY_SECONDS_TOLERANCE}s");
 
         Payment payment = await _paymentRepository.CreatePayment(newPayment);
 
