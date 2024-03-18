@@ -2,6 +2,13 @@
 
 Clone this repository.
 
+This project need at least a consumer and the PSP mock app running.
+
+
+- [PSP MOCK](https://github.com/DiegoBeker/psp-mock)
+- [CONSUMER](https://github.com/DiegoBeker/consumer-pix)
+
+
 Open a terminal in the directory of the cloned project.
 
 Run the commands

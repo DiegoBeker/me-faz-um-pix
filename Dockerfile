@@ -17,4 +17,4 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 COPY --from=build /app ./
 ENTRYPOINT ["dotnet", "me-faz-um-pix.dll"]
 
-CMD ["dotnet", "watch"]
+CMD ["dotnet", "run"]
