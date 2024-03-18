@@ -3,7 +3,7 @@ import { sleep } from 'k6';
 import { SharedArray } from "k6/data";
 
 export const options = {
-    vus: 10,
+    vus: 5,
     duration: "15s",
 };
 
@@ -13,7 +13,7 @@ const pspsData = new SharedArray("psps", function () {
 });
 
 const pixKeysdata = new SharedArray("pixKeys", function () {
-    const result = JSON.parse(open("../seed/existing_pixkeys.json"));
+    const result = JSON.parse(open("../seed/existing_pixKeys.json"));
     return result;
 });
 

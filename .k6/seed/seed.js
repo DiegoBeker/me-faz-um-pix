@@ -9,6 +9,7 @@ const knex = require("knex")({
   connection: process.env.DATABASE_URL,
 });
 
+console.log(process.env.DATABASE_URL)
 const AMOUNT_TO_CREATE = 1_000_000;
 const ERASE_DATA = false;
 let data = [];
@@ -39,6 +40,8 @@ async function run() {
 
   data = generatePixKeys();
   await populateDb("PixKey" , data);
+  console.log("geting data");
+  data = await getPixKeysWithAccountsAndUsers()
   generateJson("./seed/existing_pixKeys.json", data);
 
   console.log("Closing DB connection...");
@@ -119,4 +122,23 @@ function generatePixKeys() {
   }
 
   return pixKeys;
+}
+
+async function getPixKeysWithAccountsAndUsers() {
+  let pixKeysWithAccountsAndUsers = [];
+  try {
+    const query = `
+      SELECT "PixKey".*, "PaymentProviderAccount".*, "User".*
+      FROM "PixKey"
+      INNER JOIN "PaymentProviderAccount" ON "PixKey"."PaymentProviderAccountId" = "PaymentProviderAccount"."Id"
+      INNER JOIN "User" ON "PaymentProviderAccount"."UserId" = "User"."Id"
+    `;
+
+    pixKeysWithAccountsAndUsers = await knex.raw(query);
+
+    console.log('PixKeys com suas PaymentProviderAccounts e Users:', pixKeysWithAccountsAndUsers.rows.length);
+  } catch (error) {
+    console.error('Erro ao buscar PixKeys com suas PaymentProviderAccounts e Users:', error);
+  }
+  return pixKeysWithAccountsAndUsers.rows;
 }
