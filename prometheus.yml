@@ -14,4 +14,4 @@ scrape_configs:
       - targets: ["postgres-exporter:9187"]
   - job_name: "asp-net-exporter"
     static_configs:
-      - targets: ["dotnet_app:5041"]
+      - targets: ["me-faz-um-pix:8080"]

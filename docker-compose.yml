@@ -1,0 +1,103 @@
+services:
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: me-faz-um-pix
+    ports:
+      - 5433:5432
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    
+  me-faz-um-pix:
+    image: me-faz-um-pix
+    container_name: me-faz-um-pix
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE__HOST=postgres
+      - DATABASE__PORT=5432
+      - DATABASE__USERNAME=postgres
+      - DATABASE__PASSWORD=postgres
+      - DATABASE__NAME=me-faz-um-pix
+
+  migrate:
+    image: me-faz-um-pix-migrate
+    container_name: migrate
+    build:
+      context: .
+      dockerfile: Dockerfile.migrations
+    environment:
+      - DATABASE__HOST=postgres
+      - DATABASE__PORT=5432
+      - DATABASE__USERNAME=postgres
+      - DATABASE__PASSWORD=postgres
+      - DATABASE__NAME=me-faz-um-pix
+  
+  rabbitmq:
+    image: rabbitmq:3.12.12-management
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    volumes:
+      - rabbitmq-volume:/var/lib/rabbitmq
+
+  node-exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    command:
+      - '--path.rootfs=/host'
+    pid: host
+    ports: 
+      - 9100:9100
+    restart: unless-stopped
+    volumes:
+      - '/:/host:ro,rslave'
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    ports: 
+      - 3000:3000
+    volumes:
+      - grafana:/var/lib/grafana
+  
+  postgres-exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:latest
+    container_name: postgres-exporter
+    ports:
+      - 9187:9187
+    environment:
+      - DATA_SOURCE_URI=172.17.0.1:5433/postgres?sslmode=disable
+      - DATA_SOURCE_USER=postgres
+      - DATA_SOURCE_PASS=postgres
+
+volumes:
+  postgres-volume:
+  grafana:
+  rabbitmq-volume:

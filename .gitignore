@@ -6,4 +6,5 @@ node_modules
 .k6/seed/existing_pixKeys.json
 .k6/seed/existing_psps.json
 .k6/seed/existing_users.json
+.k6/seed/concilliation.json
 

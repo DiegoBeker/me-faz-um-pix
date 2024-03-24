@@ -60,6 +60,8 @@ builder.Services.AddScoped<HealthService>();
 builder.Services.AddScoped<KeyService>();
 builder.Services.AddScoped<PaymentService>();
 builder.Services.AddScoped<MessageService>();
+builder.Services.AddScoped<ConcilliationPublishService>();
+builder.Services.AddScoped<ConcilliationService>();
 builder.Services.AddScoped<PaymentProviderRepository>();
 builder.Services.AddScoped<PaymentProviderAccountRepository>();
 builder.Services.AddScoped<PixKeyRepository>();

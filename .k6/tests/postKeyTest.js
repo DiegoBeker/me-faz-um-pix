@@ -4,8 +4,19 @@ import { SharedArray } from "k6/data";
 import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 
 export const options = {
-    vus: 10,
-    duration: "10s",
+    scenarios: {
+      spike_usage: {
+        executor: "constant-arrival-rate",
+        duration: "60s",
+        preAllocatedVUs: 10,
+        maxVUs: 20,
+        rate: 100,
+        timeUnit: "1s",
+      },
+    },
+    thresholds: {
+      "http_reqs{scenario:spike_usage}": ["count>=10000"],
+    },
 };
 
 const usersData = new SharedArray("users", function () {
@@ -41,7 +52,7 @@ export default function () {
         "Authorization": `Bearer ${randomPsp.Token}`
     };
 
-    const response = http.post(`http://localhost:5041/keys`, body, { headers });
+    const response = http.post(`http://127.0.0.1:8080/keys`, body, { headers });
 
     if (response.status >= 400) {
         console.log(response.body);

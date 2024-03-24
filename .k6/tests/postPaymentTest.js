@@ -3,8 +3,19 @@ import { sleep } from 'k6';
 import { SharedArray } from "k6/data";
 
 export const options = {
-    vus: 5,
-    duration: "15s",
+    scenarios: {
+      spike_usage: {
+        executor: "constant-arrival-rate",
+        duration: "60s",
+        preAllocatedVUs: 10,
+        maxVUs: 20,
+        rate: 50,
+        timeUnit: "1s",
+      },
+    },
+    thresholds: {
+      "http_reqs{scenario:spike_usage}": ["count>=2500"],
+    },
 };
 
 const pspsData = new SharedArray("psps", function () {
@@ -47,7 +58,7 @@ export default function () {
         "Authorization": `Bearer ${randomPsp.Token}`
     };
 
-    const response = http.post(`http://localhost:5041/payment`, body, { headers });
+    const response = http.post(`http://localhost:8080/payment`, body, { headers });
 
     if (response.status >= 400) {
         console.log(response.body);
