@@ -2,28 +2,28 @@
 
 Clone this repository.
 
-This project need at least a consumer and the PSP mock app running.
+This project need at least one consumer PIX, one consumer-concilliation and the PSP mock app running.
 
 
 - [PSP MOCK](https://github.com/DiegoBeker/psp-mock)
-- [CONSUMER](https://github.com/DiegoBeker/consumer-pix)
+- [CONSUMER-PIX](https://github.com/DiegoBeker/consumer-pix)
+- [CONSUMER-CONCILLIATION](https://github.com/DiegoBeker/consumer-concilliation)
 
 
 Open a terminal in the directory of the cloned project.
 
+Change the internal docker ip on prometheus.yml
+
 Run the commands
 
 ```bash
-donet restore
+docker compose up -d
 ```
 
-```bash
-donet ef database update
-```
+The application will be initialized with all services. PostreSQL, RabbitMQ, Grafana, Prometheus.
 
-```bash
-donet run
-```
+Also will be apllied the migrations.
+
 
 # Seed and Tests
 
@@ -39,19 +39,13 @@ To create data on database and store json files to be used in tests run:
 npm run seed
 ```
 
+IMPORTANT: Save the PSP token that will be printed on console. This can be used for authentication and to concilliaton.
+
 To run k6 tests cd to.k6/tests an run(change the file test as you need)
 
 ```bash
 k6 run postPaymentTest.js
 ```
 
-# Monitoring
 
-Open a terminal in monitoring folder
-
-Change the internal docker ip on prometheus.yml
-
-```bash
-docker compose up -d
-```
 

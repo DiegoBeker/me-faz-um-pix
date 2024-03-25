@@ -1,7 +1,7 @@
 bin/
 obj/
 node_modules
-.env*
+.env
 .k6/seed/existing_accounts.json
 .k6/seed/existing_pixKeys.json
 .k6/seed/existing_psps.json

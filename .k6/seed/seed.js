@@ -19,6 +19,7 @@ async function run() {
     await knex("User").del();
     await knex("PaymentProvider").del();
     await knex("PaymentProviderAccount").del();
+    await knex("Payment").del();
   }
 
   const start = new Date();
@@ -44,15 +45,15 @@ async function run() {
   data = await getPixKeysWithAccountsAndUsers();
   generateJson("./seed/existing_pixKeys.json", data);
   const paymentProviderId = data.length > 0 ? data[0].PaymentProviderId : null;
-  console.log(paymentProviderId);
-  console.log(data[0]);
-  
+
   const filteredAccounts = data.filter(acc => acc.PaymentProviderId === paymentProviderId);
-  console.log(filteredAccounts.length);
+  
   const token = await getPaymentProviderToken(paymentProviderId);
+  console.log(`Psp token to concilliation ${token}`);
 
   data = generatePayments(filteredAccounts);
   await populateDb("Payment", data);
+  
   data = generatePaymentsForConcilliation();
   generateNDJSON(`./seed/concilliation.json`,data);
 
