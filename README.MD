@@ -27,6 +27,8 @@ Also will be apllied the migrations.
 
 # Seed and Tests
 
+Setup the env file using .env.example
+
 cd to .k6/
 
 ```bash
