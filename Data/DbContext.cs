@@ -66,5 +66,8 @@ public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(op
     builder.Entity<PaymentProvider>()
           .HasIndex(e => e.Token)
           .IsUnique();
+    
+    builder.Entity<PaymentProviderAccount>()
+        .HasIndex(e => new { e.Agency, e.Number });
   }
 }
