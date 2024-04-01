@@ -13,7 +13,7 @@ public class PaymentProviderAccount
     public string Agency { get; set; }
     public string Number { get; set; }
 
-    public User? User;
+    public User? User { get; }
     public long UserId { get; set; }
 
     public PaymentProvider? PaymentProvider { get; }

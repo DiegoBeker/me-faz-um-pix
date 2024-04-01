@@ -75,11 +75,7 @@ public class PaymentService(
 
         if (originAccount == null) throw new NotFoundException("Account not found");
 
-        User? user = await _userRepository.GetByCpf(data.Origin.User.Cpf);
-
-        if (user == null) throw new NotFoundException("Cpf not found.");
-
-        if (originAccount != null && (originAccount.UserId != user.Id))
+        if (originAccount.User != null && (originAccount.User.Cpf != data.Origin.User.Cpf))
             throw new ForbiddenException("User cpf does not match with account user cpf");
 
         if (destinyKey.PaymentProviderAccountId == originAccount.Id)
