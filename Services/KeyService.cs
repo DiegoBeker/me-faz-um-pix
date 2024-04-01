@@ -37,7 +37,7 @@ public class KeyService
     if (keyExists != null) throw new ConflictException("Key Already in use");
 
 
-    User? user = await _userRepository.GetByCpf(data.User.Cpf);
+    User? user = await _userRepository.GetByCpfWithAccounts(data.User.Cpf);
 
     if (user == null) throw new NotFoundException("Cpf not found.");
 
@@ -58,17 +58,30 @@ public class KeyService
       paymentProviderAccount = await _paymentProviderAccountRepository.CreateAccount(newPPA);
     }
 
-    List<PixKey> keys = await _pixKeyRepository.GetAllKeysFromUser(user.Id);
+    var allPixKeys = new List<PixKey>();
 
-    List<PixKey> cpfKeys = keys.Where(key => key.PixType == "CPF").ToList();
+    foreach (var ppa in user.PaymentProviderAccounts)
+    {
+        if(ppa.PixKeys != null)
+          allPixKeys.AddRange(ppa.PixKeys);
+    }
+
+    List<PixKey> cpfKeys = allPixKeys.Where(key => key.PixType == "CPF").ToList();
 
     if (data.Key.Type == "CPF" && cpfKeys.Count > 0)
       throw new ConflictException("User already have a key of type CPF");
 
     if (cpfKeys.Count == 20) throw new ForbiddenException("User already reached 20 keys");
 
-    List<PixKey> cpfPspKeys = await _pixKeyRepository.GetAllKeysFromPspByUser(user.Id, paymentProvider.Id);
+    List<PaymentProviderAccount> pspAccounts = user.PaymentProviderAccounts.Where(ppa => ppa.PaymentProviderId == paymentProvider.Id).ToList();
 
+    List<PixKey> cpfPspKeys = [];
+
+    foreach (var ppa in pspAccounts)
+    {
+        if(ppa.PixKeys != null)
+        cpfPspKeys.AddRange(ppa.PixKeys);
+    }
 
     if (cpfPspKeys.Count == 5) throw new ForbiddenException("User reached the limit of keys per PSP");
 

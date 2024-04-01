@@ -12,6 +12,18 @@ public class UserRespository
         _context = context;
     }
 
+    public async Task<User?> GetByCpfWithAccounts(string cpf)
+    {
+        return await _context.User
+            .Where(u => u.Cpf == cpf)
+            .Include(u => u.PaymentProviderAccounts)
+                .ThenInclude(ppa => ppa.PaymentProvider)
+            .Include(u => u.PaymentProviderAccounts)
+                .ThenInclude(ppa => ppa.PixKeys)
+            .FirstOrDefaultAsync();
+    
+    }
+
     public async Task<User?> GetByCpf(string cpf)
     {
         return await _context.User.FirstOrDefaultAsync(e => e.Cpf.Equals(cpf));
